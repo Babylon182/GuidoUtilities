@@ -122,6 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 711966433}
   - component: {fileID: 711966432}
+  - component: {fileID: 711966434}
   m_Layer: 0
   m_Name: PooledObjects
   m_TagString: Untagged
@@ -160,6 +161,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &711966434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 711966431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ac9e8def4440d88526df5f58b23cd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  testing: {fileID: 1092429138991442, guid: d7214b4488cee8d4fa1a3b8dbf17ccac, type: 2}
+  testingWithoutInterface: {fileID: 1735881600829606, guid: f151687e44066f6419d64c55c7310d26,
+    type: 2}
 --- !u!1 &1548206457
 GameObject:
   m_ObjectHideFlags: 0
@@ -253,7 +268,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1797271771}
-  - component: {fileID: 1797271770}
   m_Layer: 0
   m_Name: GenericPool
   m_TagString: Untagged
@@ -261,19 +275,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1797271770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1797271769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7a6c77b48ea6714a94802609422e983, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 114770846716932254, guid: 427064b7640016245a7d17a036378a5e,
-    type: 2}
 --- !u!4 &1797271771
 Transform:
   m_ObjectHideFlags: 0
