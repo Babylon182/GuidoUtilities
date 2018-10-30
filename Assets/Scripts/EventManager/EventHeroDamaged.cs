@@ -1,7 +1,7 @@
 ﻿using Events;
 using UnityEngine;
 
-public class EventHeroDamaged
+public class EventHeroDamaged : IGameEvent
 {
     public float damage;
     public Vector3 knockBack;
@@ -13,7 +13,7 @@ public class EventHeroDamaged
     }
 }
 
-public class EventHeroDead
+public class EventHeroDead : IGameEvent
 {
     public float score;
     public int continuesLeft;

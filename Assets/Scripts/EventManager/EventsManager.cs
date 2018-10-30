@@ -3,30 +3,34 @@ using System.Collections.Generic;
 
 namespace Events
 {
-	public static class EventsManager<T>
+	public static class EventsManager
 	{
-		private static Dictionary<Type , Action<T>> events = new Dictionary<Type, Action<T>>();
+		private static Dictionary<Type , HashSet<IInvoker>> events = new Dictionary<Type, HashSet<IInvoker>>();
 
-		public static void SubscribeToEvent(Action<T> listener) 
+		public static void SubscribeToEvent<T>(Action<T> listener) where T : IGameEvent
 		{
 			if (!events.ContainsKey(typeof(T)))
-				events.Add(typeof(T), null);
-	
-			events[typeof(T)] += listener;
+				events.Add(typeof(T), new HashSet<IInvoker>());
+			
+			events[typeof(T)].Add(CreateCallback(listener));
 		}
 
-		public static void UnsubscribeToEvent(Action<T> listener)
+		public static void UnsubscribeToEvent<T>(Action<T> listener) where T : IGameEvent
 		{
 			if (events.ContainsKey(typeof(T)))
-				events[typeof(T)] -= listener;
+				events[typeof(T)].Remove(CreateCallback(listener));	
 		}
 
-		public static void TriggerEvent(T dataEvent = default(T))
+		public static void DispatchEvent(IGameEvent gameEvent)
 		{
-			if (events.ContainsKey(typeof(T)) &&
-			    events[typeof(T)] != null)
+			Type type = gameEvent.GetType();
+			
+			if (!events.ContainsKey(type) || events[type] == null) return;
+			
+			HashSet<IInvoker> invokeList = events[type];
+			foreach (var invoke in invokeList)
 			{
-				events[typeof(T)](dataEvent);
+				invoke.Invoke(gameEvent);	
 			}
 		}
 
@@ -37,7 +41,42 @@ namespace Events
 
 		public static void ResetDictionary()
 		{
-			events = new Dictionary<Type, Action<T>>();
+			events = new Dictionary<Type, HashSet<IInvoker>>();
 		}
+
+		public static IInvoker CreateCallback<T>(Action<T> listener) where T : IGameEvent
+		{
+			return new SpecificInvoker<T> {Handler = listener};
+		}
+	}
+
+	public class ParameterlessInvoker : IInvoker
+	{
+		public Action Handler { get; set; }
+		
+		public void Invoke(IGameEvent gameEvent)
+		{
+			Handler.Invoke();
+		}
+	}
+
+	public class SpecificInvoker<T> : IInvoker where T : IGameEvent
+	{
+		public Action<T> Handler { get; set; }
+		
+		public void Invoke(IGameEvent gameEvent)
+		{
+			Handler.Invoke((T)gameEvent);
+		}
+	}
+
+	public interface IGameEvent
+	{
+		
+	}
+
+	public interface IInvoker
+	{
+		void Invoke(IGameEvent gameEvent);
 	}
 }
