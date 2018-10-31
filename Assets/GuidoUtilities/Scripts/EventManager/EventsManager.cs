@@ -1,24 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace Events
 {
 	public static class EventsManager
 	{
 		private static Dictionary<Type , HashSet<IInvoker>> events = new Dictionary<Type, HashSet<IInvoker>>();
+		
+		public static void SubscribeToEvent<T>(Action listener) where T : IGameEvent
+		{
+			if (!events.ContainsKey(typeof(T)))
+			{
+				events.Add(typeof(T), new HashSet<IInvoker>());
+			}
 
+			events[typeof(T)].Add(CreateCallback(listener));
+		}
+		
 		public static void SubscribeToEvent<T>(Action<T> listener) where T : IGameEvent
 		{
 			if (!events.ContainsKey(typeof(T)))
+			{
 				events.Add(typeof(T), new HashSet<IInvoker>());
-			
+			}
+
 			events[typeof(T)].Add(CreateCallback(listener));
 		}
 
+		public static void UnsubscribeToEvent<T>(Action listener) where T : IGameEvent
+		{
+			if (events.ContainsKey(typeof(T)))
+			{
+				var hashSet = events[typeof(T)];
+				var invokerToRemove = hashSet.SingleOrDefault(x => ((ParameterlessInvoker) x).Handler.Equals(listener));
+
+				if (invokerToRemove != null)
+				{
+					hashSet.Remove(invokerToRemove);	
+				}
+
+				if (hashSet.Count == 0)
+				{
+					events.Remove(typeof(T));
+				}
+			}
+		}
+		
 		public static void UnsubscribeToEvent<T>(Action<T> listener) where T : IGameEvent
 		{
 			if (events.ContainsKey(typeof(T)))
-				events[typeof(T)].Remove(CreateCallback(listener));	
+			{
+				var hashSet = events[typeof(T)];
+				var invokerToRemove = hashSet.SingleOrDefault(x => ((SpecificInvoker<T>) x).Handler.Equals(listener));
+
+				if (invokerToRemove != null)
+				{
+					hashSet.Remove(invokerToRemove);	
+				}
+
+				if (hashSet.Count == 0)
+				{
+					events.Remove(typeof(T));
+				}
+			}
 		}
 
 		public static void DispatchEvent(IGameEvent gameEvent)
@@ -44,7 +90,12 @@ namespace Events
 			events = new Dictionary<Type, HashSet<IInvoker>>();
 		}
 
-		public static IInvoker CreateCallback<T>(Action<T> listener) where T : IGameEvent
+		private static IInvoker CreateCallback(Action listener)
+		{
+			return new ParameterlessInvoker {Handler = listener};
+		}
+		
+		private static IInvoker CreateCallback<T>(Action<T> listener) where T : IGameEvent
 		{
 			return new SpecificInvoker<T> {Handler = listener};
 		}

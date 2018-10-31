@@ -37,6 +37,16 @@ public class DumbEnemy : MonoBehaviour {
             EventHeroDead data = new EventHeroDead(10000, 2);
             EventsManager.DispatchEvent(data);
         }
+        
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            EventsManager.UnsubscribeToEvent<EventHeroDamaged>(HeroDamage);
+        }
+        
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            EventsManager.UnsubscribeToEvent<EventHeroDead>(HeroDead);
+        }
     }
 
     public void CheckState()
